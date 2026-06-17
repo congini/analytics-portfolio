@@ -11,6 +11,7 @@
   const hasValue = (value) => Boolean(value && String(value).trim());
   const iconArrow = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 4l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   const iconExternal = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7.2 5.4h7.4v7.4M14.3 5.7 6 14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const iconDownload = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v9m0 0 3.5-3.5M10 12 6.5 8.5M4.5 15.5h11" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
   function resolvePath(path) {
     if (!path || path.startsWith("http") || path.startsWith("mailto:") || path.startsWith("#")) {
@@ -76,6 +77,14 @@
       });
     }
 
+    if (hasValue(contact.x || data.externalLinks.x.href)) {
+      items.push({
+        label: "X",
+        value: "Follow on X",
+        href: contact.x || data.externalLinks.x.href
+      });
+    }
+
     return items;
   }
 
@@ -102,13 +111,45 @@
         <nav class="nav-shell" aria-label="Primary navigation">
           <a class="brand-link" href="${escapeHtml(resolvePath("index.html"))}" aria-label="Conor Mangini home">
             <span class="brand-mark" aria-hidden="true">CM</span>
-            <span>${escapeHtml(data.owner.name)}</span>
+            <span class="brand-text">
+              <strong>${escapeHtml(data.owner.name)}</strong>
+              <small>Sports Analytics</small>
+            </span>
           </a>
           <div class="nav-links">${nav}</div>
           ${actions.length ? `<div class="header-actions">${actionMarkup}</div>` : ""}
         </nav>
       </header>
     `;
+  }
+
+  function setHeaderScrollBehavior() {
+    const header = document.querySelector(".site-header");
+    if (!header) {
+      return;
+    }
+
+    let lastY = window.scrollY;
+    let ticking = false;
+
+    function update() {
+      const nextY = window.scrollY;
+      const scrollingDown = nextY > lastY;
+
+      header.classList.toggle("is-hidden", scrollingDown && nextY > 140);
+      header.classList.toggle("is-scrolled", nextY > 12);
+      lastY = Math.max(nextY, 0);
+      ticking = false;
+    }
+
+    window.addEventListener("scroll", () => {
+      if (!ticking) {
+        window.requestAnimationFrame(update);
+        ticking = true;
+      }
+    }, { passive: true });
+
+    update();
   }
 
   function renderFooter() {
@@ -135,26 +176,40 @@
 
     const resume = data.externalLinks.resume;
     const contacts = contactItems();
+    const proofPoints = (data.owner.proofPoints || [])
+      .map((item) => `
+        <div class="metric-tile">
+          <strong>${escapeHtml(item.value)}</strong>
+          <span>${escapeHtml(item.label)}</span>
+        </div>
+      `)
+      .join("");
     const heroActions = [
-      `<a class="button button-primary" href="${escapeHtml(resolvePath("projects/index.html"))}">View Projects ${iconArrow}</a>`
+      `<a class="button button-primary" href="${escapeHtml(resolvePath("projects/index.html"))}">View Projects ${iconArrow}</a>`,
+      `<a class="button button-secondary" href="${escapeHtml(resolvePath("visuals/index.html"))}">View Visuals ${iconArrow}</a>`
     ];
 
     if (resume && hasValue(resume.href)) {
-      heroActions.push(`<a class="button button-secondary" ${linkAttrs(resume)}>${escapeHtml(resume.label)} ${iconExternal}</a>`);
-    }
-
-    if (contacts.length) {
-      heroActions.push(`<a class="button button-secondary" href="#contact">Contact ${iconArrow}</a>`);
+      heroActions.push(`<a class="button button-ghost" ${linkAttrs(resume)}>${iconDownload} ${escapeHtml(resume.label)}</a>`);
     }
 
     root.innerHTML = `
       <section class="hero-section">
         <div class="section-inner hero-inner">
-          <div class="hero-copy">
-            <h1>${escapeHtml(data.owner.name)}</h1>
-            <p>${escapeHtml(data.owner.subtitle)}</p>
+          <div class="hero-main">
+            <p class="hero-kicker">${escapeHtml(data.owner.name)}</p>
+            <h1>${escapeHtml(data.owner.title)}</h1>
+            <p class="hero-lede">${escapeHtml(data.owner.subtitle)}</p>
+            <p class="hero-intro">${escapeHtml(data.owner.intro || data.owner.about)}</p>
             <div class="button-row">${heroActions.join("")}</div>
           </div>
+          <div class="hero-panel" aria-label="Portfolio focus summary">
+            <p class="panel-label">Working toolkit</p>
+            ${proofPoints}
+          </div>
+          <figure class="hero-film">
+            <img src="${escapeHtml(resolvePath("assets/img/hero-analytics.png"))}" alt="Sports analytics field diagram with chart overlays.">
+          </figure>
         </div>
       </section>
 
@@ -162,16 +217,12 @@
         <div class="section-inner split-layout">
           <div>
             <p class="section-label">About Me</p>
-            <h2 id="about-title">Analytics work built for sports decisions.</h2>
+            <h2 id="about-title">Front-office style analysis with a builder's mindset.</h2>
           </div>
           <div class="about-copy">
             <p>${escapeHtml(data.owner.about)}</p>
             <div class="focus-list" aria-label="Analytics focus areas">
-              <span>Business analytics</span>
-              <span>Basketball operations</span>
-              <span>Football analytics</span>
-              <span>Dashboard development</span>
-              <span>Sports modeling</span>
+              ${(data.owner.focusAreas || []).map((item) => `<span>${escapeHtml(item)}</span>`).join("")}
             </div>
           </div>
         </div>
@@ -192,7 +243,7 @@
         <div class="section-inner callout-band">
           <div>
             <p class="section-label">Resume</p>
-            <h2 id="resume-title">A concise view of my analytics background.</h2>
+            <h2 id="resume-title">A concise view of the analytics work behind the portfolio.</h2>
           </div>
           <a class="button button-primary" ${linkAttrs(resume)}>${escapeHtml(resume.label)} ${iconExternal}</a>
         </div>
@@ -238,8 +289,9 @@
     root.innerHTML = `
       <section class="projects-hero">
         <div class="section-inner projects-heading">
+          <p class="section-label">Analytics work</p>
           <h1>Projects</h1>
-          <p>Completed public sports analytics work.</p>
+          <p>Completed public sports analytics work built around repeatable models, useful dashboards, and decision-ready summaries.</p>
         </div>
       </section>
       <section class="projects-section">
@@ -260,8 +312,10 @@
     root.innerHTML = `
       <section class="projects-hero visuals-hero">
         <div class="section-inner projects-heading">
+          <p class="section-label">Gallery</p>
           <h1>Visuals</h1>
-          <p>${escapeHtml(data.visuals.description || "")}</p>
+          <p>${escapeHtml(data.visuals.intro || "")}</p>
+          <p class="page-support">${escapeHtml(data.visuals.description || "")}</p>
         </div>
       </section>
       <section class="projects-section visuals-section">
@@ -275,6 +329,9 @@
       ? `<figure class="project-media"><img src="${escapeHtml(resolvePath(project.screenshot))}" alt="${escapeHtml(project.screenshotAlt || project.name)}"></figure>`
       : "";
     const tools = (project.tools || []).map((tool) => `<span>${escapeHtml(tool)}</span>`).join("");
+    const highlights = (project.highlights || [])
+      .map((highlight) => `<li>${escapeHtml(highlight)}</li>`)
+      .join("");
     const cta = hasValue(project.url)
       ? `<a class="button button-primary project-cta" href="${escapeHtml(project.url)}" target="_blank" rel="noreferrer">Open The Gini Site ${iconExternal}</a>`
       : "";
@@ -288,10 +345,20 @@
             <span>${escapeHtml(project.date)}</span>
           </div>
           <h2>${escapeHtml(project.name)}</h2>
-          <p class="project-description">${escapeHtml(project.description)}</p>
+          <p class="project-description">${escapeHtml(project.summary || project.description)}</p>
+          ${highlights ? `<ul class="project-highlights">${highlights}</ul>` : ""}
           <div class="tool-list" aria-label="Tools used">${tools}</div>
-          ${cta}
         </div>
+        <aside class="project-launch">
+          <p class="panel-label">Live analytics project</p>
+          <div class="launch-meter" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <p>${escapeHtml(project.description)}</p>
+          ${cta}
+        </aside>
       </article>
     `;
   }
@@ -354,6 +421,7 @@
   }
 
   renderHeader();
+  setHeaderScrollBehavior();
   renderFooter();
   renderHome();
   renderProjects();

@@ -1,10 +1,26 @@
 window.PORTFOLIO_DATA = {
   owner: {
     name: "Conor Mangini",
-    title: "Sports analytics portfolio",
-    subtitle: "I build sports analytics models, dashboards, and interactive tools.",
+    title: "Sports Analytics Portfolio",
+    subtitle:
+      "Football and basketball analytics work across R, Python, data visualization, dashboarding, and decision-focused tools.",
+    intro:
+      "I build sports analytics models, visual stories, and interactive tools that turn player, team, and game data into sharper questions and cleaner decisions.",
     about:
-      "I bring a business analytics foundation to sports work across basketball operations, football analytics, dashboard development, and sports modeling."
+      "I bring a business analytics foundation to sports work across basketball operations, football analytics, dashboard development, and sports modeling.",
+    focusAreas: [
+      "Football analytics",
+      "Basketball operations",
+      "R and Python workflows",
+      "Dashboard development",
+      "Sports modeling",
+      "Visual storytelling"
+    ],
+    proofPoints: [
+      { value: "NFL", label: "Team rankings and predictive tools" },
+      { value: "NBA", label: "Shot maps and visual storytelling" },
+      { value: "R/Python", label: "Reusable analysis workflows" }
+    ]
   },
 
   navigation: [
@@ -26,13 +42,18 @@ window.PORTFOLIO_DATA = {
     github: {
       label: "GitHub",
       href: ""
+    },
+    x: {
+      label: "X",
+      href: ""
     }
   },
 
   contact: {
     email: "cmang.1905@gmail.com",
     linkedin: "https://www.linkedin.com/in/conor-mangini-78b169264/",
-    github: ""
+    github: "",
+    x: ""
   },
 
   projects: [
@@ -40,9 +61,16 @@ window.PORTFOLIO_DATA = {
       name: "The Gini Site",
       subtitle: "NFL analytics platform",
       date: "May 2026",
+      summary:
+        "An interactive NFL analytics platform for evaluating team performance through rankings, dashboards, and predictive tools.",
       description:
         "The Gini Site is an interactive NFL analytics platform built to evaluate team performance through custom rankings, dashboards, and predictive tools.",
-      tools: ["Python", "Streamlit", "GitHub"],
+      tools: ["Python", "Streamlit", "GitHub", "NFL analytics", "Predictive modeling"],
+      highlights: [
+        "Custom NFL performance rankings",
+        "Dashboard-first exploration",
+        "Predictive model workflow"
+      ],
       url: "https://gini-site.streamlit.app/",
       screenshot: "",
       screenshotAlt: "The Gini Site project screenshot"
@@ -51,6 +79,8 @@ window.PORTFOLIO_DATA = {
 
   visuals: {
     enabled: true,
+    intro:
+      "On this page are some visuals that I have created and developed in my free time. Most of these are simply things that I was curious about and wanted to see the results.",
     description:
       "A collection of basketball, football, and sports analytics visuals built through data analysis, design, and visual storytelling.",
     items: [
