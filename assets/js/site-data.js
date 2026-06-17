@@ -3,23 +3,48 @@ window.PORTFOLIO_DATA = {
     name: "Conor Mangini",
     title: "Sports Analytics Portfolio",
     subtitle:
-      "Football and basketball analytics work across R, Python, data visualization, dashboarding, and decision-focused tools.",
+      "Football and basketball analytics work across R, Python, dashboards, data visualization, and decision-focused tools.",
     intro:
       "I build sports analytics models, visual stories, and interactive tools that turn player, team, and game data into sharper questions and cleaner decisions.",
-    about:
-      "I bring a business analytics foundation to sports work across basketball operations, football analytics, dashboard development, and sports modeling.",
-    focusAreas: [
-      "Football analytics",
-      "Basketball operations",
-      "R and Python workflows",
-      "Dashboard development",
-      "Sports modeling",
-      "Visual storytelling"
+    aboutParagraphs: [
+      "I am Conor Mangini, a Quinnipiac graduate student in business analytics with a background in finance, basketball operations, and sports analytics.",
+      "My work combines front-office style thinking with technical tools like R, Python, Streamlit, and data visualization. I have experience with Quinnipiac Men's Basketball operations, sports analytics projects, and building public-facing analytics tools."
     ],
-    proofPoints: [
-      { value: "NFL", label: "Team rankings and predictive tools" },
-      { value: "NBA", label: "Shot maps and visual storytelling" },
-      { value: "R/Python", label: "Reusable analysis workflows" }
+    interests:
+      "My long-term interests are in football analytics, basketball analytics, player evaluation, roster construction, and front-office decision support.",
+    aboutCards: [
+      "Quinnipiac MSBA",
+      "Basketball Operations",
+      "Sports Analytics Club",
+      "R / Python / Streamlit",
+      "NFL + NBA Analytics"
+    ],
+    toolkit: [
+      "R",
+      "Python",
+      "Streamlit",
+      "hoopR",
+      "NBA Stats API",
+      "Data Visualization",
+      "Sports Analytics"
+    ],
+    focusAreas: [
+      {
+        title: "Football Analytics",
+        description: "Team performance, rankings, predictive tools, and roster evaluation."
+      },
+      {
+        title: "Basketball Analytics",
+        description: "Shot profiles, player/team trends, and visual storytelling."
+      },
+      {
+        title: "Data Visualization",
+        description: "Clean charts, dashboards, and presentation-ready sports visuals."
+      },
+      {
+        title: "Applied Tools",
+        description: "R, Python, Streamlit, hoopR, APIs, and repeatable workflows."
+      }
     ]
   },
 
@@ -39,37 +64,33 @@ window.PORTFOLIO_DATA = {
       label: "LinkedIn",
       href: "https://www.linkedin.com/in/conor-mangini-78b169264/"
     },
-    github: {
-      label: "GitHub",
-      href: ""
-    },
     x: {
       label: "X",
-      href: ""
+      href: "https://x.com/ginianalytics"
     }
   },
 
   contact: {
     email: "cmang.1905@gmail.com",
     linkedin: "https://www.linkedin.com/in/conor-mangini-78b169264/",
-    github: "",
-    x: ""
+    x: "https://x.com/ginianalytics"
   },
 
   projects: [
     {
       name: "The Gini Site",
-      subtitle: "NFL analytics platform",
+      subtitle: "NFL Analytics Platform",
       date: "May 2026",
       summary:
         "An interactive NFL analytics platform for evaluating team performance through rankings, dashboards, and predictive tools.",
       description:
         "The Gini Site is an interactive NFL analytics platform built to evaluate team performance through custom rankings, dashboards, and predictive tools.",
-      tools: ["Python", "Streamlit", "GitHub", "NFL analytics", "Predictive modeling"],
+      tools: ["Python", "Streamlit", "NFL data", "Dashboards", "Predictive modeling"],
       highlights: [
         "Custom NFL performance rankings",
         "Dashboard-first exploration",
-        "Predictive model workflow"
+        "Predictive model workflow",
+        "Team and season comparison tools"
       ],
       url: "https://gini-site.streamlit.app/",
       screenshot: "",
@@ -95,10 +116,9 @@ window.PORTFOLIO_DATA = {
           "R",
           "hoopR",
           "NBA Stats API",
-          "Basketball analytics",
-          "Shot-frequency mapping",
-          "Data visualization",
-          "Visual storytelling"
+          "Shot Mapping",
+          "Basketball Analytics",
+          "Data Visualization"
         ],
         image: "assets/img/spurs-finals-fingerprint.png",
         alt:

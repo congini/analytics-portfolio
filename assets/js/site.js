@@ -49,6 +49,21 @@
       .filter((item) => item && hasValue(item.href));
   }
 
+  function primaryNavItems() {
+    const items = [...(data.navigation || [])];
+    const resume = data.externalLinks?.resume;
+
+    if (resume && hasValue(resume.href)) {
+      items.push({
+        label: resume.label || "Resume",
+        href: resume.href,
+        download: resume.download
+      });
+    }
+
+    return items;
+  }
+
   function contactItems() {
     const contact = data.contact || {};
     const items = [];
@@ -61,7 +76,7 @@
       });
     }
 
-    if (hasValue(contact.linkedin || data.externalLinks.linkedin.href)) {
+    if (hasValue(contact.linkedin || data.externalLinks.linkedin?.href)) {
       items.push({
         label: "LinkedIn",
         value: "Connect on LinkedIn",
@@ -69,15 +84,7 @@
       });
     }
 
-    if (hasValue(contact.github || data.externalLinks.github.href)) {
-      items.push({
-        label: "GitHub",
-        value: "View GitHub",
-        href: contact.github || data.externalLinks.github.href
-      });
-    }
-
-    if (hasValue(contact.x || data.externalLinks.x.href)) {
+    if (hasValue(contact.x || data.externalLinks.x?.href)) {
       items.push({
         label: "X",
         value: "Follow on X",
@@ -94,16 +101,11 @@
       return;
     }
 
-    const actions = externalActions();
-    const nav = data.navigation
+    const nav = primaryNavItems()
       .map((item) => {
         const activeClass = item.page === currentPage ? " is-active" : "";
-        return `<a class="nav-link${activeClass}" href="${escapeHtml(resolvePath(item.path))}">${escapeHtml(item.label)}</a>`;
+        return `<a class="nav-link${activeClass}" ${linkAttrs(item)}>${escapeHtml(item.label)}</a>`;
       })
-      .join("");
-
-    const actionMarkup = actions
-      .map((item) => `<a class="header-action" ${linkAttrs(item)}>${escapeHtml(item.label)} ${iconExternal}</a>`)
       .join("");
 
     header.innerHTML = `
@@ -117,7 +119,6 @@
             </span>
           </a>
           <div class="nav-links">${nav}</div>
-          ${actions.length ? `<div class="header-actions">${actionMarkup}</div>` : ""}
         </nav>
       </header>
     `;
@@ -158,11 +159,26 @@
       return;
     }
 
+    const nav = primaryNavItems()
+      .map((item) => `<a ${linkAttrs(item)}>${escapeHtml(item.label)}</a>`)
+      .join("");
+    const contact = contactItems()
+      .map((item) => {
+        const text = item.label === "Email" ? item.value : item.label;
+        return `<a class="footer-contact-link" ${linkAttrs(item)}>${escapeHtml(text)}</a>`;
+      })
+      .join("");
+
     footer.innerHTML = `
       <footer class="site-footer">
         <div class="section-inner footer-inner">
-          <p>${escapeHtml(data.owner.name)}</p>
-          <p>${escapeHtml(data.owner.title)}</p>
+          <div>
+            <p>${escapeHtml(data.owner.name)}</p>
+            <span>${escapeHtml(data.owner.title)}</span>
+          </div>
+          <nav class="footer-links" aria-label="Footer navigation">${nav}</nav>
+          <div class="footer-contact" aria-label="Contact links">${contact}</div>
+          <small>Built as a static portfolio.</small>
         </div>
       </footer>
     `;
@@ -175,41 +191,41 @@
     }
 
     const resume = data.externalLinks.resume;
-    const contacts = contactItems();
-    const proofPoints = (data.owner.proofPoints || [])
+    const toolkit = (data.owner.toolkit || [])
+      .map((item) => `<span>${escapeHtml(item)}</span>`)
+      .join("");
+    const aboutParagraphs = (data.owner.aboutParagraphs || [])
+      .map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`)
+      .join("");
+    const aboutCards = (data.owner.aboutCards || [])
+      .map((item) => `<span>${escapeHtml(item)}</span>`)
+      .join("");
+    const focusCards = (data.owner.focusAreas || [])
       .map((item) => `
-        <div class="metric-tile">
-          <strong>${escapeHtml(item.value)}</strong>
-          <span>${escapeHtml(item.label)}</span>
-        </div>
+        <article class="focus-card">
+          <h3>${escapeHtml(item.title)}</h3>
+          <p>${escapeHtml(item.description)}</p>
+        </article>
       `)
       .join("");
     const heroActions = [
-      `<a class="button button-primary" href="${escapeHtml(resolvePath("projects/index.html"))}">View Projects ${iconArrow}</a>`,
-      `<a class="button button-secondary" href="${escapeHtml(resolvePath("visuals/index.html"))}">View Visuals ${iconArrow}</a>`
+      `<a class="button button-primary" href="${escapeHtml(resolvePath("projects/index.html"))}">Projects ${iconArrow}</a>`,
+      `<a class="button button-secondary" href="${escapeHtml(resolvePath("visuals/index.html"))}">Visuals ${iconArrow}</a>`
     ];
 
     if (resume && hasValue(resume.href)) {
-      heroActions.push(`<a class="button button-ghost" ${linkAttrs(resume)}>${iconDownload} ${escapeHtml(resume.label)}</a>`);
+      heroActions.push(`<a class="button button-secondary" ${linkAttrs(resume)}>${iconDownload} ${escapeHtml(resume.label)}</a>`);
     }
 
     root.innerHTML = `
       <section class="hero-section">
         <div class="section-inner hero-inner">
-          <div class="hero-main">
-            <p class="hero-kicker">${escapeHtml(data.owner.name)}</p>
-            <h1>${escapeHtml(data.owner.title)}</h1>
-            <p class="hero-lede">${escapeHtml(data.owner.subtitle)}</p>
-            <p class="hero-intro">${escapeHtml(data.owner.intro || data.owner.about)}</p>
-            <div class="button-row">${heroActions.join("")}</div>
-          </div>
-          <div class="hero-panel" aria-label="Portfolio focus summary">
-            <p class="panel-label">Working toolkit</p>
-            ${proofPoints}
-          </div>
-          <figure class="hero-film">
-            <img src="${escapeHtml(resolvePath("assets/img/hero-analytics.png"))}" alt="Sports analytics field diagram with chart overlays.">
-          </figure>
+          <p class="hero-kicker">${escapeHtml(data.owner.name)}</p>
+          <h1>${escapeHtml(data.owner.title)}</h1>
+          <p class="hero-lede">${escapeHtml(data.owner.subtitle)}</p>
+          <p class="hero-intro">${escapeHtml(data.owner.intro)}</p>
+          <div class="button-row">${heroActions.join("")}</div>
+          <div class="toolkit-strip" aria-label="Skills and tools">${toolkit}</div>
         </div>
       </section>
 
@@ -217,35 +233,37 @@
         <div class="section-inner split-layout">
           <div>
             <p class="section-label">About Me</p>
-            <h2 id="about-title">Front-office style analysis with a builder's mindset.</h2>
+            <h2 id="about-title">Front-office thinking, practical analytics tools, and sports questions worth testing.</h2>
           </div>
           <div class="about-copy">
-            <p>${escapeHtml(data.owner.about)}</p>
-            <div class="focus-list" aria-label="Analytics focus areas">
-              ${(data.owner.focusAreas || []).map((item) => `<span>${escapeHtml(item)}</span>`).join("")}
-            </div>
+            ${aboutParagraphs}
+            <p>${escapeHtml(data.owner.interests)}</p>
+            <div class="detail-strip" aria-label="Background details">${aboutCards}</div>
           </div>
         </div>
       </section>
 
-      ${renderResumeSection(resume)}
-      ${renderContactSection(contacts)}
-    `;
-  }
-
-  function renderResumeSection(resume) {
-    if (!resume || !hasValue(resume.href)) {
-      return "";
-    }
-
-    return `
-      <section class="content-section resume-section" aria-labelledby="resume-title">
-        <div class="section-inner callout-band">
-          <div>
-            <p class="section-label">Resume</p>
-            <h2 id="resume-title">A concise view of the analytics work behind the portfolio.</h2>
+      <section class="content-section focus-section" aria-labelledby="focus-title">
+        <div class="section-inner">
+          <div class="section-heading-row">
+            <p class="section-label">Focus Areas</p>
+            <h2 id="focus-title">Where the work is pointed.</h2>
           </div>
-          <a class="button button-primary" ${linkAttrs(resume)}>${escapeHtml(resume.label)} ${iconExternal}</a>
+          <div class="focus-grid">${focusCards}</div>
+        </div>
+      </section>
+
+      <section class="content-section direction-section" aria-labelledby="direction-title">
+        <div class="section-inner direction-band">
+          <div>
+            <p class="section-label">Explore</p>
+            <h2 id="direction-title">Analytics projects and standalone visuals live on their own pages.</h2>
+            <p>For interactive analytics projects, visit Projects. For standalone graphics and shot maps, visit Visuals.</p>
+          </div>
+          <div class="direction-actions">
+            <a class="button button-primary" href="${escapeHtml(resolvePath("projects/index.html"))}">Explore Projects ${iconArrow}</a>
+            <a class="button button-secondary" href="${escapeHtml(resolvePath("visuals/index.html"))}">Explore Visuals ${iconArrow}</a>
+          </div>
         </div>
       </section>
     `;
@@ -287,9 +305,9 @@
 
     const projects = (data.projects || []).map(renderProjectCard).join("");
     root.innerHTML = `
-      <section class="projects-hero">
-        <div class="section-inner projects-heading">
-          <p class="section-label">Analytics work</p>
+      <section class="page-hero">
+        <div class="section-inner page-heading">
+          <p class="section-label">Analytics Projects</p>
           <h1>Projects</h1>
           <p>Completed public sports analytics work built around repeatable models, useful dashboards, and decision-ready summaries.</p>
         </div>
@@ -297,6 +315,32 @@
       <section class="projects-section">
         <div class="section-inner project-list">${projects}</div>
       </section>
+    `;
+  }
+
+  function renderProjectCard(project) {
+    const tools = (project.tools || []).map((tool) => `<span>${escapeHtml(tool)}</span>`).join("");
+    const highlights = (project.highlights || [])
+      .map((highlight) => `<li>${escapeHtml(highlight)}</li>`)
+      .join("");
+    const cta = hasValue(project.url)
+      ? `<a class="button button-primary project-cta" href="${escapeHtml(project.url)}" target="_blank" rel="noreferrer">Open The Gini Site ${iconExternal}</a>`
+      : "";
+
+    return `
+      <article class="project-card">
+        <div class="project-card-main">
+          <div class="project-meta">
+            <p>${escapeHtml(project.subtitle).toUpperCase()}</p>
+            <span>${escapeHtml(project.date)}</span>
+          </div>
+          <h2>${escapeHtml(project.name)}</h2>
+          <p class="project-description">${escapeHtml(project.summary || project.description)}</p>
+          ${highlights ? `<ul class="project-highlights">${highlights}</ul>` : ""}
+          <div class="tool-list" aria-label="Tools used">${tools}</div>
+          ${cta}
+        </div>
+      </article>
     `;
   }
 
@@ -310,9 +354,9 @@
     const cards = visuals.map(renderVisualCard).join("");
 
     root.innerHTML = `
-      <section class="projects-hero visuals-hero">
-        <div class="section-inner projects-heading">
-          <p class="section-label">Gallery</p>
+      <section class="page-hero visuals-hero">
+        <div class="section-inner page-heading">
+          <p class="section-label">Visual Gallery</p>
           <h1>Visuals</h1>
           <p>${escapeHtml(data.visuals.intro || "")}</p>
           <p class="page-support">${escapeHtml(data.visuals.description || "")}</p>
@@ -321,45 +365,6 @@
       <section class="projects-section visuals-section">
         <div class="section-inner visual-list">${cards}</div>
       </section>
-    `;
-  }
-
-  function renderProjectCard(project) {
-    const screenshot = hasValue(project.screenshot)
-      ? `<figure class="project-media"><img src="${escapeHtml(resolvePath(project.screenshot))}" alt="${escapeHtml(project.screenshotAlt || project.name)}"></figure>`
-      : "";
-    const tools = (project.tools || []).map((tool) => `<span>${escapeHtml(tool)}</span>`).join("");
-    const highlights = (project.highlights || [])
-      .map((highlight) => `<li>${escapeHtml(highlight)}</li>`)
-      .join("");
-    const cta = hasValue(project.url)
-      ? `<a class="button button-primary project-cta" href="${escapeHtml(project.url)}" target="_blank" rel="noreferrer">Open The Gini Site ${iconExternal}</a>`
-      : "";
-
-    return `
-      <article class="project-card">
-        ${screenshot}
-        <div class="project-body">
-          <div class="project-meta">
-            <p>${escapeHtml(project.subtitle).toUpperCase()}</p>
-            <span>${escapeHtml(project.date)}</span>
-          </div>
-          <h2>${escapeHtml(project.name)}</h2>
-          <p class="project-description">${escapeHtml(project.summary || project.description)}</p>
-          ${highlights ? `<ul class="project-highlights">${highlights}</ul>` : ""}
-          <div class="tool-list" aria-label="Tools used">${tools}</div>
-        </div>
-        <aside class="project-launch">
-          <p class="panel-label">Live analytics project</p>
-          <div class="launch-meter" aria-hidden="true">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-          <p>${escapeHtml(project.description)}</p>
-          ${cta}
-        </aside>
-      </article>
     `;
   }
 
@@ -397,34 +402,10 @@
     `;
   }
 
-  function renderVisualsAccordion() {
-    if (!data.visuals || !data.visuals.enabled) {
-      return "";
-    }
-
-    return (data.visuals.items || [])
-      .map((visual) => `
-        <details class="visual-item">
-          <summary>
-            <span>${escapeHtml(visual.title)}</span>
-            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 8l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </summary>
-          <div class="visual-panel">
-            ${hasValue(visual.image) ? `<img src="${escapeHtml(resolvePath(visual.image))}" alt="${escapeHtml(visual.title)}">` : ""}
-            <p>${escapeHtml(visual.sport || "")}</p>
-            <p>${escapeHtml(visual.description || "")}</p>
-            <div class="tool-list">${(visual.tools || []).map((tool) => `<span>${escapeHtml(tool)}</span>`).join("")}</div>
-          </div>
-        </details>
-      `)
-      .join("");
-  }
-
   renderHeader();
   setHeaderScrollBehavior();
   renderFooter();
   renderHome();
   renderProjects();
   renderVisuals();
-  window.renderVisualsAccordion = renderVisualsAccordion;
 })();
