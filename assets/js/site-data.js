@@ -3,31 +3,14 @@ window.PORTFOLIO_DATA = {
     name: "Conor Mangini",
     title: "Sports Analytics Portfolio",
     subtitle:
-      "Football and basketball analytics work across R, Python, dashboards, data visualization, and decision-focused tools.",
-    intro:
-      "I build sports analytics models, visual stories, and interactive tools that turn player, team, and game data into sharper questions and cleaner decisions.",
+      "I’ve always been a sports guy, especially when it comes to football and basketball. Over time, that passion turned into building analytics projects with R, Python, dashboards, data visuals, and tools that help make smarter decisions. I like taking the numbers behind the game and turning them into something people can actually understand and use.",
     aboutParagraphs: [
-      "I am Conor Mangini, a Quinnipiac graduate student in business analytics with a background in finance, basketball operations, and sports analytics.",
-      "My work combines front-office style thinking with technical tools like R, Python, Streamlit, and data visualization. I have experience with Quinnipiac Men's Basketball operations, sports analytics projects, and building public-facing analytics tools."
+      "Sports are a huge part of who I am. I’ve had a lifelong bias toward Colorado and Denver sports, but I don’t discriminate — I’ll watch, follow, and overanalyze just about any team or topic. I’m especially into football analytics, basketball analytics, player evaluation, roster construction, and building tools that make the game easier to understand.",
+      "Outside of sports, listening to music is probably my favorite hobby. There's no wrong time to put on music. My Apple Music library contains over 2500 downloaded songs, alongside 26 unique playlists. Pearl Jam is undoubtedly my favorite band of all time - I can't be convinced otherwise."
     ],
-    interests:
-      "My long-term interests are in football analytics, basketball analytics, player evaluation, roster construction, and front-office decision support.",
-    aboutCards: [
-      "Quinnipiac MSBA",
-      "Basketball Operations",
-      "Sports Analytics Club",
-      "R / Python / Streamlit",
-      "NFL + NBA Analytics"
-    ],
-    toolkit: [
-      "R",
-      "Python",
-      "Streamlit",
-      "hoopR",
-      "NBA Stats API",
-      "Data Visualization",
-      "Sports Analytics"
-    ],
+    aboutQuote:
+      "The best revenge is to live on and prove yourself.",
+    aboutQuoteAttribution: "Eddie Vedder",
     focusAreas: [
       {
         title: "Football Analytics",
@@ -42,8 +25,8 @@ window.PORTFOLIO_DATA = {
         description: "Clean charts, dashboards, and presentation-ready sports visuals."
       },
       {
-        title: "Applied Tools",
-        description: "R, Python, Streamlit, hoopR, APIs, and repeatable workflows."
+        title: "Models & Visuals",
+        description: "I use R and Python to create models and visuals."
       }
     ]
   },
@@ -106,20 +89,9 @@ window.PORTFOLIO_DATA = {
       "A collection of basketball, football, and sports analytics visuals built through data analysis, design, and visual storytelling.",
     items: [
       {
-        title: "Spurs Finals Shot-Frequency Fingerprint",
-        sport: "Basketball visual",
+        title: "Spurs Finals Shot Profile",
         shortDescription:
-          "A Spurs-specific shot-frequency visual comparing San Antonio's shot distribution in the 2026 NBA Finals to its regular-season profile.",
-        description:
-          "This visual started in R using hoopR / NBA Stats API data to compare the Spurs' Finals shot profile against their regular-season shot distribution. Pink areas show where San Antonio shot more often, while teal areas show where they shot less often. After building the original half-court data layer, I refined the final graphic into a Spurs hardwood presentation while preserving the shot locations, labels, percentages, and annotations.",
-        tools: [
-          "R",
-          "hoopR",
-          "NBA Stats API",
-          "Shot Mapping",
-          "Basketball Analytics",
-          "Data Visualization"
-        ],
+          "Built in R using hoopR and NBA Stats API data, this visual shows where San Antonio’s 2026 Finals shot profile differed from its regular-season shot distribution.",
         image: "assets/img/spurs-finals-fingerprint.png",
         alt:
           "Spurs Finals shot-frequency fingerprint comparing shot distribution to regular season."

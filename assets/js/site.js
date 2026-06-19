@@ -11,7 +11,6 @@
   const hasValue = (value) => Boolean(value && String(value).trim());
   const iconArrow = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 4l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   const iconExternal = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7.2 5.4h7.4v7.4M14.3 5.7 6 14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  const iconDownload = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v9m0 0 3.5-3.5M10 12 6.5 8.5M4.5 15.5h11" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
   function resolvePath(path) {
     if (!path || path.startsWith("http") || path.startsWith("mailto:") || path.startsWith("#")) {
@@ -42,26 +41,8 @@
     return `href="${escapeHtml(resolvePath(href))}"${target}${download}`;
   }
 
-  function externalActions() {
-    const links = data.externalLinks || {};
-    return Object.keys(links)
-      .map((key) => links[key])
-      .filter((item) => item && hasValue(item.href));
-  }
-
   function primaryNavItems() {
-    const items = [...(data.navigation || [])];
-    const resume = data.externalLinks?.resume;
-
-    if (resume && hasValue(resume.href)) {
-      items.push({
-        label: resume.label || "Resume",
-        href: resume.href,
-        download: resume.download
-      });
-    }
-
-    return items;
+    return [...(data.navigation || [])];
   }
 
   function contactItems() {
@@ -111,13 +92,6 @@
     header.innerHTML = `
       <header class="site-header">
         <nav class="nav-shell" aria-label="Primary navigation">
-          <a class="brand-link" href="${escapeHtml(resolvePath("index.html"))}" aria-label="Conor Mangini home">
-            <span class="brand-mark" aria-hidden="true">CM</span>
-            <span class="brand-text">
-              <strong>${escapeHtml(data.owner.name)}</strong>
-              <small>Sports Analytics</small>
-            </span>
-          </a>
           <div class="nav-links">${nav}</div>
         </nav>
       </header>
@@ -130,16 +104,10 @@
       return;
     }
 
-    let lastY = window.scrollY;
     let ticking = false;
 
     function update() {
-      const nextY = window.scrollY;
-      const scrollingDown = nextY > lastY;
-
-      header.classList.toggle("is-hidden", scrollingDown && nextY > 140);
-      header.classList.toggle("is-scrolled", nextY > 12);
-      lastY = Math.max(nextY, 0);
+      header.classList.toggle("is-scrolled", window.scrollY > 12);
       ticking = false;
     }
 
@@ -159,9 +127,6 @@
       return;
     }
 
-    const nav = primaryNavItems()
-      .map((item) => `<a ${linkAttrs(item)}>${escapeHtml(item.label)}</a>`)
-      .join("");
     const contact = contactItems()
       .map((item) => {
         const text = item.label === "Email" ? item.value : item.label;
@@ -172,13 +137,16 @@
     footer.innerHTML = `
       <footer class="site-footer">
         <div class="section-inner footer-inner">
-          <div>
-            <p>${escapeHtml(data.owner.name)}</p>
+          <div class="footer-brand">
+            <img
+              src="${escapeHtml(resolvePath("assets/img/cm_wordmark_horizontal_white_text.png"))}"
+              alt="Conor Mangini Sports Analytics"
+              width="1400"
+              height="420"
+            >
             <span>${escapeHtml(data.owner.title)}</span>
           </div>
-          <nav class="footer-links" aria-label="Footer navigation">${nav}</nav>
           <div class="footer-contact" aria-label="Contact links">${contact}</div>
-          <small>Built as a static portfolio.</small>
         </div>
       </footer>
     `;
@@ -190,15 +158,8 @@
       return;
     }
 
-    const resume = data.externalLinks.resume;
-    const toolkit = (data.owner.toolkit || [])
-      .map((item) => `<span>${escapeHtml(item)}</span>`)
-      .join("");
     const aboutParagraphs = (data.owner.aboutParagraphs || [])
       .map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`)
-      .join("");
-    const aboutCards = (data.owner.aboutCards || [])
-      .map((item) => `<span>${escapeHtml(item)}</span>`)
       .join("");
     const focusCards = (data.owner.focusAreas || [])
       .map((item) => `
@@ -213,32 +174,53 @@
       `<a class="button button-secondary" href="${escapeHtml(resolvePath("visuals/index.html"))}">Visuals ${iconArrow}</a>`
     ];
 
-    if (resume && hasValue(resume.href)) {
-      heroActions.push(`<a class="button button-secondary" ${linkAttrs(resume)}>${iconDownload} ${escapeHtml(resume.label)}</a>`);
-    }
-
     root.innerHTML = `
       <section class="hero-section">
         <div class="section-inner hero-inner">
-          <p class="hero-kicker">${escapeHtml(data.owner.name)}</p>
-          <h1>${escapeHtml(data.owner.title)}</h1>
-          <p class="hero-lede">${escapeHtml(data.owner.subtitle)}</p>
-          <p class="hero-intro">${escapeHtml(data.owner.intro)}</p>
-          <div class="button-row">${heroActions.join("")}</div>
-          <div class="toolkit-strip" aria-label="Skills and tools">${toolkit}</div>
+          <div class="hero-copy">
+            <p class="hero-kicker">${escapeHtml(data.owner.name)}</p>
+            <h1>${escapeHtml(data.owner.title)}</h1>
+            <p class="hero-lede">${escapeHtml(data.owner.subtitle)}</p>
+            <div class="button-row">${heroActions.join("")}</div>
+          </div>
+          <div class="hero-media">
+            <img
+              class="hero-photo"
+              src="${escapeHtml(resolvePath("assets/img/conor-qu-pregame.jpeg"))}"
+              data-alternate-src="${escapeHtml(resolvePath("assets/img/mbb-vs-canisius-02052026-035.jpeg"))}"
+              alt="Conor Mangini before a Quinnipiac basketball game"
+              width="2000"
+              height="3000"
+            >
+            <div class="hero-photo-fallback" aria-hidden="true">
+              <span>Quinnipiac Basketball Operations</span>
+            </div>
+          </div>
         </div>
       </section>
 
       <section class="content-section about-section" aria-labelledby="about-title">
-        <div class="section-inner split-layout">
-          <div>
-            <p class="section-label">About Me</p>
-            <h2 id="about-title">Front-office thinking, practical analytics tools, and sports questions worth testing.</h2>
+        <div class="section-inner">
+          <div class="identity-heading">
+            <p class="section-label">About Conor</p>
+            <h2 id="about-title">A little more about me.</h2>
           </div>
-          <div class="about-copy">
-            ${aboutParagraphs}
-            <p>${escapeHtml(data.owner.interests)}</p>
-            <div class="detail-strip" aria-label="Background details">${aboutCards}</div>
+          <div class="identity-grid">
+            <figure class="about-portrait">
+              <img
+                src="${escapeHtml(resolvePath("assets/img/conor-headshot.jpeg"))}"
+                alt="Conor Mangini sports analytics portfolio headshot"
+                width="1484"
+                height="1060"
+              >
+            </figure>
+            <div class="about-copy">
+              ${aboutParagraphs}
+              <blockquote class="about-quote">
+                <p>${escapeHtml(data.owner.aboutQuote)}</p>
+                <cite>— <span>${escapeHtml(data.owner.aboutQuoteAttribution)}</span></cite>
+              </blockquote>
+            </div>
           </div>
         </div>
       </section>
@@ -250,20 +232,6 @@
             <h2 id="focus-title">Where the work is pointed.</h2>
           </div>
           <div class="focus-grid">${focusCards}</div>
-        </div>
-      </section>
-
-      <section class="content-section direction-section" aria-labelledby="direction-title">
-        <div class="section-inner direction-band">
-          <div>
-            <p class="section-label">Explore</p>
-            <h2 id="direction-title">Analytics projects and standalone visuals live on their own pages.</h2>
-            <p>For interactive analytics projects, visit Projects. For standalone graphics and shot maps, visit Visuals.</p>
-          </div>
-          <div class="direction-actions">
-            <a class="button button-primary" href="${escapeHtml(resolvePath("projects/index.html"))}">Explore Projects ${iconArrow}</a>
-            <a class="button button-secondary" href="${escapeHtml(resolvePath("visuals/index.html"))}">Explore Visuals ${iconArrow}</a>
-          </div>
         </div>
       </section>
     `;
@@ -305,11 +273,19 @@
 
     const projects = (data.projects || []).map(renderProjectCard).join("");
     root.innerHTML = `
-      <section class="page-hero">
+      <section class="page-hero projects-hero">
         <div class="section-inner page-heading">
           <p class="section-label">Analytics Projects</p>
           <h1>Projects</h1>
           <p>Completed public sports analytics work built around repeatable models, useful dashboards, and decision-ready summaries.</p>
+        </div>
+        <div class="page-hero-media" aria-hidden="true">
+          <img
+            src="${escapeHtml(resolvePath("assets/img/projects-hero.jpg"))}"
+            alt=""
+            width="1206"
+            height="784"
+          >
         </div>
       </section>
       <section class="projects-section">
@@ -323,12 +299,14 @@
     const highlights = (project.highlights || [])
       .map((highlight) => `<li>${escapeHtml(highlight)}</li>`)
       .join("");
+    const screenshot = renderProjectMedia(project, true);
     const cta = hasValue(project.url)
       ? `<a class="button button-primary project-cta" href="${escapeHtml(project.url)}" target="_blank" rel="noreferrer">Open The Gini Site ${iconExternal}</a>`
       : "";
 
     return `
       <article class="project-card">
+        ${screenshot}
         <div class="project-card-main">
           <div class="project-meta">
             <p>${escapeHtml(project.subtitle).toUpperCase()}</p>
@@ -342,6 +320,65 @@
         </div>
       </article>
     `;
+  }
+
+  function renderProjectMedia(project, linkScreenshot) {
+    const screenshotPath = hasValue(project.screenshot) ? resolvePath(project.screenshot) : "";
+
+    if (hasValue(screenshotPath)) {
+      const media = `
+        <img
+          src="${escapeHtml(screenshotPath)}"
+          alt="${escapeHtml(project.screenshotAlt || `${project.name} project screenshot`)}"
+        >
+      `;
+
+      return linkScreenshot
+        ? `<a class="project-media" href="${escapeHtml(screenshotPath)}" target="_blank" rel="noreferrer">${media}</a>`
+        : `<div class="project-media">${media}</div>`;
+    }
+
+    return `
+      <div class="project-media project-media-placeholder" role="img" aria-label="${escapeHtml(`${project.name} analytics dashboard preview`)}">
+        <div class="placeholder-toolbar">
+          <span></span><span></span><span></span>
+          <strong>${escapeHtml(project.name)}</strong>
+        </div>
+        <div class="placeholder-dashboard">
+          <div class="placeholder-score">
+            <small>Performance index</small>
+            <strong>Team evaluation</strong>
+            <span></span>
+          </div>
+          <div class="placeholder-chart" aria-hidden="true">
+            <i style="--bar: 46%"></i>
+            <i style="--bar: 68%"></i>
+            <i style="--bar: 57%"></i>
+            <i style="--bar: 84%"></i>
+            <i style="--bar: 73%"></i>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function setImageFallbacks() {
+    document.querySelectorAll("img[data-alternate-src]").forEach((image) => {
+      image.addEventListener("error", () => {
+        const alternateSrc = image.dataset.alternateSrc;
+
+        if (alternateSrc && image.src !== new URL(alternateSrc, window.location.href).href) {
+          image.src = alternateSrc;
+          return;
+        }
+
+        const media = image.closest(".hero-media");
+        if (media) {
+          media.classList.add("is-missing");
+        }
+        image.remove();
+      });
+    });
   }
 
   function renderVisuals() {
@@ -361,6 +398,14 @@
           <p>${escapeHtml(data.visuals.intro || "")}</p>
           <p class="page-support">${escapeHtml(data.visuals.description || "")}</p>
         </div>
+        <div class="page-hero-media" aria-hidden="true">
+          <img
+            src="${escapeHtml(resolvePath("assets/img/visuals-hero.jpg"))}"
+            alt=""
+            width="963"
+            height="1280"
+          >
+        </div>
       </section>
       <section class="projects-section visuals-section">
         <div class="section-inner visual-list">${cards}</div>
@@ -368,38 +413,82 @@
     `;
   }
 
-  function renderVisualCard(visual) {
-    const tools = (visual.tools || []).map((tool) => `<span>${escapeHtml(tool)}</span>`).join("");
+  function renderVisualCard(visual, index) {
     const imagePath = hasValue(visual.image) ? resolvePath(visual.image) : "";
+    const lightboxId = `visual-lightbox-${index}`;
     const image = hasValue(imagePath)
       ? `
-        <a class="visual-media" href="${escapeHtml(imagePath)}" target="_blank" rel="noreferrer">
+        <button
+          class="visual-media"
+          type="button"
+          data-lightbox-open="${escapeHtml(lightboxId)}"
+          aria-label="${escapeHtml(`Open full-size preview of ${visual.title}`)}"
+        >
           <img src="${escapeHtml(imagePath)}" alt="${escapeHtml(visual.alt || visual.title)}">
-        </a>
+        </button>
+      `
+      : "";
+    const lightbox = hasValue(imagePath)
+      ? `
+        <dialog
+          class="visual-lightbox"
+          id="${escapeHtml(lightboxId)}"
+          aria-label="${escapeHtml(`${visual.title} full-size preview`)}"
+        >
+          <div class="visual-lightbox-shell">
+            <button class="visual-lightbox-close" type="button" data-lightbox-close>Close</button>
+            <img src="${escapeHtml(imagePath)}" alt="${escapeHtml(visual.alt || visual.title)}">
+          </div>
+        </dialog>
       `
       : "";
 
     return `
-      <article class="visual-card">
-        ${image}
-        <div class="visual-body">
-          <div class="project-meta">
-            <p>${escapeHtml(visual.sport || "Visual").toUpperCase()}</p>
+      <details class="visual-card">
+        <summary class="visual-summary">
+          <span class="visual-summary-copy">
+            <span class="visual-summary-title">${escapeHtml(visual.title)}</span>
+          </span>
+        </summary>
+        <div class="visual-expanded">
+          ${image}
+          <div class="visual-body">
+            <p class="project-description">${escapeHtml(visual.shortDescription || visual.description || "")}</p>
           </div>
-          <h2>${escapeHtml(visual.title)}</h2>
-          <p class="project-description">${escapeHtml(visual.shortDescription || visual.description || "")}</p>
-          <div class="tool-list" aria-label="Tools and skills">${tools}</div>
-          <details class="visual-detail">
-            <summary>
-              <span>Project details</span>
-              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 8l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </summary>
-            <p>${escapeHtml(visual.description || "")}</p>
-          </details>
-          ${hasValue(imagePath) ? `<a class="button button-primary project-cta" href="${escapeHtml(imagePath)}" target="_blank" rel="noreferrer">View Full Graphic ${iconExternal}</a>` : ""}
         </div>
-      </article>
+        ${lightbox}
+      </details>
     `;
+  }
+
+  function setVisualLightboxes() {
+    document.querySelectorAll("[data-lightbox-open]").forEach((trigger) => {
+      trigger.addEventListener("click", () => {
+        const dialog = document.getElementById(trigger.dataset.lightboxOpen);
+        if (dialog && typeof dialog.showModal === "function") {
+          dialog.showModal();
+        }
+      });
+    });
+
+    document.querySelectorAll(".visual-lightbox").forEach((dialog) => {
+      const closeButton = dialog.querySelector("[data-lightbox-close]");
+
+      if (closeButton) {
+        closeButton.addEventListener("click", () => dialog.close());
+      }
+
+      dialog.addEventListener("click", (event) => {
+        if (event.target === dialog) {
+          dialog.close();
+        }
+      });
+
+      dialog.addEventListener("cancel", (event) => {
+        event.preventDefault();
+        dialog.close();
+      });
+    });
   }
 
   renderHeader();
@@ -408,4 +497,6 @@
   renderHome();
   renderProjects();
   renderVisuals();
+  setImageFallbacks();
+  setVisualLightboxes();
 })();
