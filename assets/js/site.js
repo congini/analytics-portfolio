@@ -9,7 +9,6 @@
   }
 
   const hasValue = (value) => Boolean(value && String(value).trim());
-  const iconArrow = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 4l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   const iconExternal = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7.2 5.4h7.4v7.4M14.3 5.7 6 14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
   function resolvePath(path) {
@@ -36,9 +35,9 @@
   function linkAttrs(item) {
     const href = item.href || item.path;
     const isExternal = href && (href.startsWith("http") || href.startsWith("mailto:"));
-    const target = isExternal ? ' target="_blank" rel="noreferrer"' : "";
-    const download = item.download ? " download" : "";
-    return `href="${escapeHtml(resolvePath(href))}"${target}${download}`;
+    const opensNewTab = isExternal || item.newTab;
+    const target = opensNewTab ? ' target="_blank" rel="noopener noreferrer"' : "";
+    return `href="${escapeHtml(resolvePath(href))}"${target}`;
   }
 
   function primaryNavItems() {
@@ -85,7 +84,8 @@
     const nav = primaryNavItems()
       .map((item) => {
         const activeClass = item.page === currentPage ? " is-active" : "";
-        return `<a class="nav-link${activeClass}" ${linkAttrs(item)}>${escapeHtml(item.label)}</a>`;
+        const currentAttribute = item.page === currentPage ? ' aria-current="page"' : "";
+        return `<a class="nav-link${activeClass}" ${linkAttrs(item)}${currentAttribute}>${escapeHtml(item.label)}</a>`;
       })
       .join("");
 
@@ -169,10 +169,10 @@
         </article>
       `)
       .join("");
-    const heroActions = [
-      `<a class="button button-primary" href="${escapeHtml(resolvePath("projects/index.html"))}">Projects ${iconArrow}</a>`,
-      `<a class="button button-secondary" href="${escapeHtml(resolvePath("visuals/index.html"))}">Visuals ${iconArrow}</a>`
-    ];
+    const resume = data.externalLinks.resume;
+    const heroActions = hasValue(resume?.href)
+      ? [`<a class="button button-primary button-resume" ${linkAttrs(resume)}>Resume ${iconExternal}</a>`]
+      : [];
 
     root.innerHTML = `
       <section class="hero-section">
@@ -295,70 +295,24 @@
   }
 
   function renderProjectCard(project) {
-    const tools = (project.tools || []).map((tool) => `<span>${escapeHtml(tool)}</span>`).join("");
-    const highlights = (project.highlights || [])
-      .map((highlight) => `<li>${escapeHtml(highlight)}</li>`)
-      .join("");
-    const screenshot = renderProjectMedia(project, true);
     const cta = hasValue(project.url)
-      ? `<a class="button button-primary project-cta" href="${escapeHtml(project.url)}" target="_blank" rel="noreferrer">Open The Gini Site ${iconExternal}</a>`
+      ? `<a class="project-link" href="${escapeHtml(project.url)}" target="_blank" rel="noopener noreferrer"><span>View project</span>${iconExternal}</a>`
       : "";
 
     return `
       <article class="project-card">
-        ${screenshot}
         <div class="project-card-main">
-          <div class="project-meta">
-            <p>${escapeHtml(project.subtitle).toUpperCase()}</p>
-            <span>${escapeHtml(project.date)}</span>
+          <div class="project-card-copy">
+            <div class="project-meta">
+              <p>${escapeHtml(project.subtitle).toUpperCase()}</p>
+              <span>${escapeHtml(project.date)}</span>
+            </div>
+            <h2>${escapeHtml(project.name)}</h2>
+            <p class="project-description">${escapeHtml(project.summary || project.description)}</p>
           </div>
-          <h2>${escapeHtml(project.name)}</h2>
-          <p class="project-description">${escapeHtml(project.summary || project.description)}</p>
-          ${highlights ? `<ul class="project-highlights">${highlights}</ul>` : ""}
-          <div class="tool-list" aria-label="Tools used">${tools}</div>
           ${cta}
         </div>
       </article>
-    `;
-  }
-
-  function renderProjectMedia(project, linkScreenshot) {
-    const screenshotPath = hasValue(project.screenshot) ? resolvePath(project.screenshot) : "";
-
-    if (hasValue(screenshotPath)) {
-      const media = `
-        <img
-          src="${escapeHtml(screenshotPath)}"
-          alt="${escapeHtml(project.screenshotAlt || `${project.name} project screenshot`)}"
-        >
-      `;
-
-      return linkScreenshot
-        ? `<a class="project-media" href="${escapeHtml(screenshotPath)}" target="_blank" rel="noreferrer">${media}</a>`
-        : `<div class="project-media">${media}</div>`;
-    }
-
-    return `
-      <div class="project-media project-media-placeholder" role="img" aria-label="${escapeHtml(`${project.name} analytics dashboard preview`)}">
-        <div class="placeholder-toolbar">
-          <span></span><span></span><span></span>
-          <strong>${escapeHtml(project.name)}</strong>
-        </div>
-        <div class="placeholder-dashboard">
-          <div class="placeholder-score">
-            <small>Performance index</small>
-            <strong>Team evaluation</strong>
-            <span></span>
-          </div>
-          <div class="placeholder-chart" aria-hidden="true">
-            <i style="--bar: 46%"></i>
-            <i style="--bar: 68%"></i>
-            <i style="--bar: 57%"></i>
-            <i style="--bar: 84%"></i>
-            <i style="--bar: 73%"></i>
-          </div>
-        </div>
-      </div>
     `;
   }
 
@@ -396,7 +350,6 @@
           <p class="section-label">Visual Gallery</p>
           <h1>Visuals</h1>
           <p>${escapeHtml(data.visuals.intro || "")}</p>
-          <p class="page-support">${escapeHtml(data.visuals.description || "")}</p>
         </div>
         <div class="page-hero-media" aria-hidden="true">
           <img

@@ -5,12 +5,12 @@ window.PORTFOLIO_DATA = {
     subtitle:
       "I’ve always been a sports guy, especially when it comes to football and basketball. Over time, that passion turned into building analytics projects with R, Python, dashboards, data visuals, and tools that help make smarter decisions. I like taking the numbers behind the game and turning them into something people can actually understand and use.",
     aboutParagraphs: [
-      "Sports are a huge part of who I am. I’ve had a lifelong bias toward Colorado and Denver sports, but I don’t discriminate — I’ll watch, follow, and overanalyze just about any team or topic. I’m especially into football analytics, basketball analytics, player evaluation, roster construction, and building tools that make the game easier to understand.",
+      "Sports are a huge part of who I am. I’ve had a lifelong bias toward Colorado and Denver sports, but I don’t discriminate - I’ll watch, follow, and overanalyze just about any team or topic. I’m especially into football analytics, basketball analytics, player evaluation, roster construction, and building tools that make the game easier to understand.",
       "Outside of sports, listening to music is probably my favorite hobby. There's no wrong time to put on music. My Apple Music library contains over 2500 downloaded songs, alongside 26 unique playlists. Pearl Jam is undoubtedly my favorite band of all time - I can't be convinced otherwise."
     ],
     aboutQuote:
-      "The best revenge is to live on and prove yourself.",
-    aboutQuoteAttribution: "Eddie Vedder",
+      "\u201cThe best revenge is to live on and prove yourself.\u201d",
+    aboutQuoteAttribution: "Eddie Vedder \u00b7 Pearl Jam",
     focusAreas: [
       {
         title: "Football Analytics",
@@ -41,7 +41,7 @@ window.PORTFOLIO_DATA = {
     resume: {
       label: "Resume",
       href: "assets/resume/Conor-Mangini-Resume-2026.pdf",
-      download: true
+      newTab: true
     },
     linkedin: {
       label: "LinkedIn",
