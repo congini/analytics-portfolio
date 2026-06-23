@@ -95,6 +95,22 @@ window.PORTFOLIO_DATA = {
         image: "assets/img/spurs-finals-fingerprint.png",
         alt:
           "Spurs Finals shot-frequency fingerprint comparing shot distribution to regular season."
+      },
+      {
+        title: "Quinnipiac Season Momentum Map",
+        shortDescription:
+          "A game-by-game view of Quinnipiac men's basketball's 2025-26 season, combining final margin, five-game rolling margin, streaks, and momentum into one timeline.",
+        image: "assets/img/quinnipiac-season-momentum-2025-26.png",
+        alt:
+          "Quinnipiac 2025-26 season momentum timeline showing game margins, rolling margin, and streak map."
+      },
+      {
+        title: "Quinnipiac Late-Season Shot Density Shift",
+        shortDescription:
+          "A court-density comparison of Quinnipiac's last five games against its first 27, highlighting where shot volume moved and how the late-season profile changed.",
+        image: "assets/img/quinnipiac-shot-density-last-five-2025-26.png",
+        alt:
+          "Quinnipiac shot density comparison showing last five games versus first 27 games for the 2025-26 season."
       }
     ]
   }
