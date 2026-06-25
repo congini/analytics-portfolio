@@ -366,35 +366,154 @@
     `;
   }
 
+  function renderLightbox(lightboxId, title, imagePath, alt) {
+    if (!hasValue(imagePath)) {
+      return "";
+    }
+
+    return `
+      <dialog
+        class="visual-lightbox"
+        id="${escapeHtml(lightboxId)}"
+        aria-label="${escapeHtml(`${title} full-size preview`)}"
+      >
+        <div class="visual-lightbox-shell">
+          <button class="visual-lightbox-close" type="button" data-lightbox-close>Close</button>
+          <img src="${escapeHtml(imagePath)}" alt="${escapeHtml(alt || title)}">
+        </div>
+      </dialog>
+    `;
+  }
+
+  function renderVisualMediaButton(imagePath, alt, title, lightboxId, className = "") {
+    if (!hasValue(imagePath)) {
+      return "";
+    }
+
+    return `
+      <button
+        class="visual-media${className ? ` ${className}` : ""}"
+        type="button"
+        data-lightbox-open="${escapeHtml(lightboxId)}"
+        aria-label="${escapeHtml(`Open full-size preview of ${title}`)}"
+      >
+        <img src="${escapeHtml(imagePath)}" alt="${escapeHtml(alt || title)}">
+      </button>
+    `;
+  }
+
+  function slideImageItems(slide) {
+    if (Array.isArray(slide.images) && slide.images.length) {
+      return slide.images;
+    }
+
+    if (hasValue(slide.image)) {
+      return [{ image: slide.image, alt: slide.alt || slide.title }];
+    }
+
+    return [];
+  }
+
+  function renderVisualSlide(visual, slide, visualIndex, slideIndex) {
+    const imageItems = slideImageItems(slide);
+    const compareClass = imageItems.length > 1 ? " visual-slide-media--compare" : "";
+    const media = imageItems
+      .map((item, imageIndex) => {
+        const imagePath = resolvePath(item.image || item.path || item.src);
+        const lightboxId = `visual-lightbox-${visualIndex}-${slideIndex}-${imageIndex}`;
+        return renderVisualMediaButton(
+          imagePath,
+          item.alt || slide.alt || slide.title,
+          item.title || slide.title,
+          lightboxId,
+          "visual-slide-image"
+        );
+      })
+      .join("");
+    const lightboxes = imageItems
+      .map((item, imageIndex) => {
+        const imagePath = resolvePath(item.image || item.path || item.src);
+        const lightboxId = `visual-lightbox-${visualIndex}-${slideIndex}-${imageIndex}`;
+        return renderLightbox(
+          lightboxId,
+          item.title || slide.title,
+          imagePath,
+          item.alt || slide.alt || slide.title
+        );
+      })
+      .join("");
+    const slideHidden = slideIndex === 0 ? "" : " hidden";
+    const activeClass = slideIndex === 0 ? " is-active" : "";
+
+    return `
+      <article
+        class="visual-slide${activeClass}"
+        data-carousel-slide
+        aria-hidden="${slideIndex === 0 ? "false" : "true"}"${slideHidden}
+      >
+        <div class="visual-slide-media${compareClass}">${media}</div>
+        <div class="visual-slide-body">
+          <h3>${escapeHtml(slide.title)}</h3>
+          <p class="project-description">${escapeHtml(slide.description || "")}</p>
+        </div>
+        ${lightboxes}
+      </article>
+    `;
+  }
+
+  function renderVisualCarousel(visual, index) {
+    const slides = Array.isArray(visual.slides) ? visual.slides : [];
+
+    if (!slides.length) {
+      return "";
+    }
+
+    const slidePanels = slides
+      .map((slide, slideIndex) => renderVisualSlide(visual, slide, index, slideIndex))
+      .join("");
+    const dots = slides
+      .map((slide, slideIndex) => `
+        <button
+          class="visual-carousel-dot"
+          type="button"
+          role="tab"
+          data-carousel-dot="${slideIndex}"
+          aria-label="${escapeHtml(`Show slide ${slideIndex + 1}: ${slide.title}`)}"
+        ></button>
+      `)
+      .join("");
+
+    return `
+      <div class="visual-carousel" data-visual-carousel>
+        <div class="visual-carousel-track">${slidePanels}</div>
+        <div class="visual-carousel-controls" aria-label="${escapeHtml(`${visual.title} slide controls`)}">
+          <button class="visual-carousel-button" type="button" data-carousel-prev>Previous</button>
+          <div class="visual-carousel-dots" role="tablist" aria-label="Choose slide">${dots}</div>
+          <button class="visual-carousel-button" type="button" data-carousel-next>Next</button>
+        </div>
+        <p class="visual-carousel-status" data-carousel-status aria-live="polite"></p>
+      </div>
+    `;
+  }
+
   function renderVisualCard(visual, index) {
+    const hasSlides = Array.isArray(visual.slides) && visual.slides.length;
     const imagePath = hasValue(visual.image) ? resolvePath(visual.image) : "";
     const lightboxId = `visual-lightbox-${index}`;
-    const image = hasValue(imagePath)
-      ? `
-        <button
-          class="visual-media"
-          type="button"
-          data-lightbox-open="${escapeHtml(lightboxId)}"
-          aria-label="${escapeHtml(`Open full-size preview of ${visual.title}`)}"
-        >
-          <img src="${escapeHtml(imagePath)}" alt="${escapeHtml(visual.alt || visual.title)}">
-        </button>
-      `
+    const image = !hasSlides
+      ? renderVisualMediaButton(imagePath, visual.alt || visual.title, visual.title, lightboxId)
       : "";
-    const lightbox = hasValue(imagePath)
-      ? `
-        <dialog
-          class="visual-lightbox"
-          id="${escapeHtml(lightboxId)}"
-          aria-label="${escapeHtml(`${visual.title} full-size preview`)}"
-        >
-          <div class="visual-lightbox-shell">
-            <button class="visual-lightbox-close" type="button" data-lightbox-close>Close</button>
-            <img src="${escapeHtml(imagePath)}" alt="${escapeHtml(visual.alt || visual.title)}">
+    const lightbox = !hasSlides
+      ? renderLightbox(lightboxId, visual.title, imagePath, visual.alt || visual.title)
+      : "";
+    const expandedContent = hasSlides
+      ? renderVisualCarousel(visual, index)
+      : `
+          ${image}
+          <div class="visual-body">
+            <p class="project-description">${escapeHtml(visual.shortDescription || visual.description || "")}</p>
           </div>
-        </dialog>
-      `
-      : "";
+        `;
 
     return `
       <details class="visual-card">
@@ -404,14 +523,55 @@
           </span>
         </summary>
         <div class="visual-expanded">
-          ${image}
-          <div class="visual-body">
-            <p class="project-description">${escapeHtml(visual.shortDescription || visual.description || "")}</p>
-          </div>
+          ${expandedContent}
         </div>
         ${lightbox}
       </details>
     `;
+  }
+
+  function setVisualCarousels() {
+    document.querySelectorAll("[data-visual-carousel]").forEach((carousel) => {
+      const slides = Array.from(carousel.querySelectorAll("[data-carousel-slide]"));
+      const dots = Array.from(carousel.querySelectorAll("[data-carousel-dot]"));
+      const previousButton = carousel.querySelector("[data-carousel-prev]");
+      const nextButton = carousel.querySelector("[data-carousel-next]");
+      const status = carousel.querySelector("[data-carousel-status]");
+      let activeIndex = 0;
+
+      if (!slides.length) {
+        return;
+      }
+
+      function showSlide(index) {
+        activeIndex = (index + slides.length) % slides.length;
+
+        slides.forEach((slide, slideIndex) => {
+          const isActive = slideIndex === activeIndex;
+          slide.hidden = !isActive;
+          slide.classList.toggle("is-active", isActive);
+          slide.setAttribute("aria-hidden", String(!isActive));
+        });
+
+        dots.forEach((dot, dotIndex) => {
+          const isActive = dotIndex === activeIndex;
+          dot.classList.toggle("is-active", isActive);
+          dot.setAttribute("aria-selected", String(isActive));
+        });
+
+        if (status) {
+          status.textContent = `Slide ${activeIndex + 1} of ${slides.length}`;
+        }
+      }
+
+      previousButton?.addEventListener("click", () => showSlide(activeIndex - 1));
+      nextButton?.addEventListener("click", () => showSlide(activeIndex + 1));
+      dots.forEach((dot, dotIndex) => {
+        dot.addEventListener("click", () => showSlide(dotIndex));
+      });
+
+      showSlide(0);
+    });
   }
 
   function setVisualLightboxes() {
@@ -451,5 +611,6 @@
   renderProjects();
   renderVisuals();
   setImageFallbacks();
+  setVisualCarousels();
   setVisualLightboxes();
 })();

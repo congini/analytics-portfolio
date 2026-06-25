@@ -111,6 +111,46 @@ window.PORTFOLIO_DATA = {
         image: "assets/img/quinnipiac-shot-density-last-five-2025-26.png",
         alt:
           "Quinnipiac shot density comparison showing last five games versus first 27 games for the 2025-26 season."
+      },
+      {
+        title: "NFL 4th Down Trends",
+        shortDescription:
+          "A three-part visual set tracking NFL 4th down aggression, decision tendencies, and EPA shifts across recent seasons.",
+        slides: [
+          {
+            title: "Go-For-It Rate Over Time",
+            description:
+              "How NFL 4th down aggression has changed across recent seasons. Built in Python with pandas, NumPy, and Matplotlib using nflverse play-by-play data.",
+            image: "assets/img/nfl-4th-down-go-for-it-rate-2015-2025.png",
+            alt:
+              "NFL 4th down go-for-it rate by season from 2015 through 2025."
+          },
+          {
+            title: "Fourth Down Decision Trends by Quarter",
+            description:
+              "A side-by-side comparison of 4th down decision tendencies in 2015 vs. 2025. Built in Python with pandas, NumPy, and Matplotlib using nflverse play-by-play data.",
+            images: [
+              {
+                image: "assets/img/nfl-4th-down-quarter-trends-2015.png",
+                alt:
+                  "Most common NFL 4th down decisions by quarter and field position for the 2015 season."
+              },
+              {
+                image: "assets/img/nfl-4th-down-quarter-trends-2025.png",
+                alt:
+                  "Most common NFL 4th down decisions by quarter and field position for the 2025 season."
+              }
+            ]
+          },
+          {
+            title: "4th Down EPA Distribution",
+            description:
+              "How the league-wide 4th down EPA curve shifted from 2010 to 2025. Built in R with nflreadr, dplyr, ggplot2, scales, showtext, and ragg.",
+            image: "assets/img/nfl-4th-down-epa-distribution-2010-2025.png",
+            alt:
+              "NFL 4th down EPA distribution comparing the league curve in 2010 and 2025."
+          }
+        ]
       }
     ]
   }
