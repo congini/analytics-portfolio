@@ -151,6 +151,34 @@ window.PORTFOLIO_DATA = {
               "NFL 4th down EPA distribution comparing the league curve in 2010 and 2025."
           }
         ]
+      },
+      {
+        title: "Sean Payton Scouting Report",
+        slides: [
+          {
+            title: "Sean Payton Call Sheet Comparison",
+            description:
+              "Side-by-side Broncos/Saints call sheets comparing Sean Payton’s play-calling by down, distance, quarter, and field position. Built in Python with pandas, NumPy, Matplotlib, Pillow, and nflreadpy/nflverse play-by-play data.",
+            images: [
+              {
+                image: "assets/img/sean-payton-call-sheet-denver.png",
+                alt: "Sean Payton Denver Broncos call sheet scouting report."
+              },
+              {
+                image: "assets/img/sean-payton-call-sheet-new-orleans.png",
+                alt: "Sean Payton New Orleans Saints call sheet scouting report."
+              }
+            ]
+          },
+          {
+            title: "How Has Sean Payton Adapted in Denver?",
+            description:
+              "Year-by-year view of Payton’s Broncos offense from 2023 to present across personnel, motion, play action, RPOs, screens, and pass-game design. Built in Python with pandas, NumPy, Matplotlib, Pillow, nflreadpy/nflverse play-by-play data, participation data, and FTN charting tags.",
+            image: "assets/img/sean-payton-denver-adaptation.png",
+            alt:
+              "Year-by-year visual showing how Sean Payton adapted the Denver Broncos offense from 2023 to present."
+          }
+        ]
       }
     ]
   }
