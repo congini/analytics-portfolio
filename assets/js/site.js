@@ -527,7 +527,6 @@
             href="${escapeHtml(resolvePath(visual.fullVideo))}"
             target="_blank"
             rel="noopener noreferrer"
-            data-full-video-open
           >
             <span>See full video</span>${iconExternal}
           </a>
@@ -592,22 +591,6 @@
     document.querySelectorAll("[data-visual-media-image]").forEach((image) => {
       image.addEventListener("error", () => {
         image.closest(".visual-media")?.classList.add("is-missing");
-      });
-    });
-  }
-
-  function setVisualVideoLinks() {
-    document.querySelectorAll("[data-full-video-open]").forEach((link) => {
-      link.addEventListener("click", (event) => {
-        event.preventDefault();
-
-        const videoWindow = window.open(link.href, "_blank");
-        if (videoWindow) {
-          videoWindow.opener = null;
-          return;
-        }
-
-        window.location.href = link.href;
       });
     });
   }
@@ -699,7 +682,6 @@
   setImageFallbacks();
   setVisualDetailsBehavior();
   setVisualMediaFallbacks();
-  setVisualVideoLinks();
   setVisualCarousels();
   setVisualLightboxes();
 })();

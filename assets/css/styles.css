@@ -1382,6 +1382,79 @@ a {
   object-fit: contain;
 }
 
+.video-page-main {
+  min-height: calc(100vh - 160px);
+}
+
+.video-page-section {
+  padding: 42px 0 96px;
+}
+
+.video-page-inner {
+  display: grid;
+  gap: 16px;
+}
+
+.video-page-toolbar {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.video-back-link {
+  align-items: center;
+  background: rgba(14, 29, 48, 0.78);
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  color: var(--ink);
+  display: inline-flex;
+  font-size: 0.9rem;
+  font-weight: 820;
+  gap: 9px;
+  min-height: 42px;
+  padding: 10px 14px;
+  transition: background 180ms ease, border-color 180ms ease, color 180ms ease, transform 180ms ease;
+  width: fit-content;
+}
+
+.video-back-link svg {
+  color: var(--orange-bright);
+  height: 1em;
+  transition: transform 180ms ease;
+  width: 1em;
+}
+
+.video-back-link:hover,
+.video-back-link:focus-visible {
+  background: rgba(25, 47, 74, 0.94);
+  border-color: rgba(38, 166, 230, 0.36);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.video-back-link:hover svg,
+.video-back-link:focus-visible svg {
+  transform: translateX(-2px);
+}
+
+.video-player-shell {
+  background:
+    linear-gradient(rgba(217, 226, 235, 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(217, 226, 235, 0.028) 1px, transparent 1px),
+    rgba(4, 10, 18, 0.28);
+  background-size: 42px 42px;
+  border-radius: 16px;
+  padding: clamp(12px, 2.4vw, 26px);
+}
+
+.video-player {
+  background: #000;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 24px 58px rgba(0, 0, 0, 0.42);
+  height: auto;
+  width: 100%;
+}
+
 .site-footer {
   background:
     linear-gradient(120deg, rgba(0, 115, 183, 0.08), transparent 34%),

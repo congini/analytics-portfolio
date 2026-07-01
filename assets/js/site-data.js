@@ -185,7 +185,7 @@ window.PORTFOLIO_DATA = {
         description:
           "A three-panel visual that shows the original game clip, a calibrated top-down tracking replay, and a throw-window timeline for Bo Nix's red-zone touchdown to Troy Franklin. Built with Python, OpenCV, pandas, NumPy, Pillow, and Matplotlib using manually tagged player locations, homography field calibration, defender trails, and ball-flight animation. Throw Window Score and Catch Probability Proxy are custom visual proxies that I created. Their formulas combine receiver separation, nearest-defender distance, throw-window timing, catch-point space, and ball-arrival timing to summarize how open and catchable the window looked.",
         image: "assets/img/bo-nix-threads-the-needle.gif",
-        fullVideo: "assets/video/bo-nix-threads-the-needle.mp4",
+        fullVideo: "visuals/bo-nix-threads-the-needle-video.html",
         alt:
           "Three-panel GIF showing Bo Nix's touchdown throw to Troy Franklin with receiver window tracking, top-down replay, and throw-window timeline."
       }
