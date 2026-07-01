@@ -397,7 +397,8 @@
         data-lightbox-open="${escapeHtml(lightboxId)}"
         aria-label="${escapeHtml(`Open full-size preview of ${title}`)}"
       >
-        <img src="${escapeHtml(imagePath)}" alt="${escapeHtml(alt || title)}">
+        <img src="${escapeHtml(imagePath)}" alt="${escapeHtml(alt || title)}" data-visual-media-image>
+        <span class="visual-media-fallback">Visual media could not be loaded.</span>
       </button>
     `;
   }
@@ -500,15 +501,43 @@
     const hasSlides = Array.isArray(visual.slides) && visual.slides.length;
     const imagePath = hasValue(visual.image) ? resolvePath(visual.image) : "";
     const lightboxId = `visual-lightbox-${index}`;
+    const detailTitle = visual.detailTitle || visual.title;
+    const detailSubtitle = visual.detailSubtitle || "";
+    const summarySubtitle = visual.summarySubtitle || "";
     const image = !hasSlides
       ? renderVisualMediaButton(imagePath, visual.alt || visual.title, visual.title, lightboxId)
       : "";
     const lightbox = !hasSlides
       ? renderLightbox(lightboxId, visual.title, imagePath, visual.alt || visual.title)
       : "";
+    const hasCaseStudyContent = hasValue(visual.detailTitle)
+      || hasValue(visual.detailSubtitle)
+      || hasValue(visual.methodNote)
+      || hasValue(visual.metricNote);
+    const methodNote = hasValue(visual.methodNote)
+      ? `<p class="visual-note"><strong>Method / tools:</strong> ${escapeHtml(visual.methodNote)}</p>`
+      : "";
+    const metricNote = hasValue(visual.metricNote)
+      ? `<p class="visual-note"><strong>Metric note:</strong> ${escapeHtml(visual.metricNote)}</p>`
+      : "";
     const expandedContent = hasSlides
       ? renderVisualCarousel(visual, index)
-      : `
+      : hasCaseStudyContent
+        ? `
+          <div class="visual-case-study">
+            <div class="visual-case-heading">
+              <h3>${escapeHtml(detailTitle)}</h3>
+              ${hasValue(detailSubtitle) ? `<p>${escapeHtml(detailSubtitle)}</p>` : ""}
+            </div>
+            ${image}
+            <div class="visual-body visual-case-body">
+              <p class="project-description">${escapeHtml(visual.description || visual.shortDescription || "")}</p>
+              ${methodNote}
+              ${metricNote}
+            </div>
+          </div>
+        `
+        : `
           ${image}
           <div class="visual-body">
             <p class="project-description">${escapeHtml(visual.shortDescription || visual.description || "")}</p>
@@ -517,17 +546,46 @@
 
     return `
       <details class="visual-card">
-        <summary class="visual-summary">
+        <summary class="visual-summary" aria-expanded="false" data-visual-summary>
           <span class="visual-summary-copy">
             <span class="visual-summary-title">${escapeHtml(visual.title)}</span>
+            ${hasValue(summarySubtitle) ? `<span class="visual-summary-subtitle">${escapeHtml(summarySubtitle)}</span>` : ""}
           </span>
         </summary>
         <div class="visual-expanded">
           ${expandedContent}
+          <button class="visual-collapse-button" type="button" data-visual-close>Collapse</button>
         </div>
         ${lightbox}
       </details>
     `;
+  }
+
+  function setVisualDetailsBehavior() {
+    document.querySelectorAll(".visual-card").forEach((card) => {
+      card.open = false;
+      const summary = card.querySelector("[data-visual-summary]");
+      const closeButton = card.querySelector("[data-visual-close]");
+
+      function syncExpandedState() {
+        summary?.setAttribute("aria-expanded", String(card.open));
+      }
+
+      card.addEventListener("toggle", syncExpandedState);
+      closeButton?.addEventListener("click", () => {
+        card.open = false;
+        summary?.focus();
+      });
+      syncExpandedState();
+    });
+  }
+
+  function setVisualMediaFallbacks() {
+    document.querySelectorAll("[data-visual-media-image]").forEach((image) => {
+      image.addEventListener("error", () => {
+        image.closest(".visual-media")?.classList.add("is-missing");
+      });
+    });
   }
 
   function setVisualCarousels() {
@@ -577,6 +635,10 @@
   function setVisualLightboxes() {
     document.querySelectorAll("[data-lightbox-open]").forEach((trigger) => {
       trigger.addEventListener("click", () => {
+        if (trigger.classList.contains("is-missing")) {
+          return;
+        }
+
         const dialog = document.getElementById(trigger.dataset.lightboxOpen);
         if (dialog && typeof dialog.showModal === "function") {
           dialog.showModal();
@@ -611,6 +673,8 @@
   renderProjects();
   renderVisuals();
   setImageFallbacks();
+  setVisualDetailsBehavior();
+  setVisualMediaFallbacks();
   setVisualCarousels();
   setVisualLightboxes();
 })();
