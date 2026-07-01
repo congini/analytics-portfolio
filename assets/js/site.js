@@ -520,6 +520,19 @@
     const metricNote = hasValue(visual.metricNote)
       ? `<p class="visual-note"><strong>Metric note:</strong> ${escapeHtml(visual.metricNote)}</p>`
       : "";
+    const videoCta = hasValue(visual.fullVideo)
+      ? `
+          <a
+            class="visual-video-link"
+            href="${escapeHtml(resolvePath(visual.fullVideo))}"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-full-video-open
+          >
+            <span>See full video</span>${iconExternal}
+          </a>
+        `
+      : "";
     const expandedContent = hasSlides
       ? renderVisualCarousel(visual, index)
       : hasCaseStudyContent
@@ -554,7 +567,7 @@
         </summary>
         <div class="visual-expanded">
           ${expandedContent}
-          <button class="visual-collapse-button" type="button" data-visual-close>Collapse</button>
+          ${videoCta}
         </div>
         ${lightbox}
       </details>
@@ -565,17 +578,12 @@
     document.querySelectorAll(".visual-card").forEach((card) => {
       card.open = false;
       const summary = card.querySelector("[data-visual-summary]");
-      const closeButton = card.querySelector("[data-visual-close]");
 
       function syncExpandedState() {
         summary?.setAttribute("aria-expanded", String(card.open));
       }
 
       card.addEventListener("toggle", syncExpandedState);
-      closeButton?.addEventListener("click", () => {
-        card.open = false;
-        summary?.focus();
-      });
       syncExpandedState();
     });
   }
@@ -584,6 +592,22 @@
     document.querySelectorAll("[data-visual-media-image]").forEach((image) => {
       image.addEventListener("error", () => {
         image.closest(".visual-media")?.classList.add("is-missing");
+      });
+    });
+  }
+
+  function setVisualVideoLinks() {
+    document.querySelectorAll("[data-full-video-open]").forEach((link) => {
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
+
+        const videoWindow = window.open(link.href, "_blank");
+        if (videoWindow) {
+          videoWindow.opener = null;
+          return;
+        }
+
+        window.location.href = link.href;
       });
     });
   }
@@ -675,6 +699,7 @@
   setImageFallbacks();
   setVisualDetailsBehavior();
   setVisualMediaFallbacks();
+  setVisualVideoLinks();
   setVisualCarousels();
   setVisualLightboxes();
 })();
