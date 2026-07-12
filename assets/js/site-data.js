@@ -40,7 +40,7 @@ window.PORTFOLIO_DATA = {
   externalLinks: {
     resume: {
       label: "Resume",
-      href: "assets/resume/Conor-Mangini-Resume-2026.pdf",
+      href: "assets/resume/conor-mangini-resume.pdf",
       newTab: true
     },
     linkedin: {

@@ -9,7 +9,7 @@ The site is intentionally data-driven. Add real links and assets in `assets/js/s
 
 ## Configured Links And Assets
 
-- Resume PDF: `assets/resume/Conor-Mangini-Resume-2026.pdf`
+- Resume PDF: `assets/resume/conor-mangini-resume.pdf`
 - LinkedIn: `https://www.linkedin.com/in/conor-mangini-78b169264/`
 - Email: `cmang.1905@gmail.com`
 - The Gini Site: `https://gini-site.streamlit.app/`
