@@ -188,6 +188,17 @@ window.PORTFOLIO_DATA = {
         fullVideo: "visuals/bo-nix-threads-the-needle-video.html",
         alt:
           "Three-panel GIF showing Bo Nix's touchdown throw to Troy Franklin with receiver window tracking, top-down replay, and throw-window timeline."
+      },
+      {
+        title: "2026 NBA Champion Market Odds",
+        description:
+          "This animation was made in Python using real Polymarket championship odds and official NBA playoff results. The data was organized into a timeline showing how each team’s chances changed throughout the playoffs. Matplotlib created the moving lines, logos, percentages, and camera effects, Pillow made the GIF, and FFmpeg made the MP4 video.",
+        image: "assets/img/the_championship_market_2026.gif",
+        fullVideo: "visuals/2026-nba-champion-market-odds-video.html",
+        mediaWidth: 1600,
+        mediaHeight: 1000,
+        alt:
+          "Animated timeline of 2026 NBA championship market odds throughout the playoffs."
       }
     ]
   }

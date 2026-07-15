@@ -385,10 +385,25 @@
     `;
   }
 
-  function renderVisualMediaButton(imagePath, alt, title, lightboxId, className = "") {
+  function renderVisualMediaButton(
+    imagePath,
+    alt,
+    title,
+    lightboxId,
+    className = "",
+    mediaWidth = 0,
+    mediaHeight = 0
+  ) {
     if (!hasValue(imagePath)) {
       return "";
     }
+
+    const width = Number(mediaWidth);
+    const height = Number(mediaHeight);
+    const hasIntrinsicSize = Number.isFinite(width) && width > 0
+      && Number.isFinite(height) && height > 0;
+    const aspectRatio = hasIntrinsicSize ? ` style="aspect-ratio: ${width} / ${height};"` : "";
+    const intrinsicSize = hasIntrinsicSize ? ` width="${width}" height="${height}"` : "";
 
     return `
       <button
@@ -396,8 +411,9 @@
         type="button"
         data-lightbox-open="${escapeHtml(lightboxId)}"
         aria-label="${escapeHtml(`Open full-size preview of ${title}`)}"
+        ${aspectRatio}
       >
-        <img src="${escapeHtml(imagePath)}" alt="${escapeHtml(alt || title)}" data-visual-media-image>
+        <img src="${escapeHtml(imagePath)}" alt="${escapeHtml(alt || title)}"${intrinsicSize} data-visual-media-image>
         <span class="visual-media-fallback">Visual media could not be loaded.</span>
       </button>
     `;
@@ -505,7 +521,15 @@
     const detailSubtitle = visual.detailSubtitle || "";
     const summarySubtitle = visual.summarySubtitle || "";
     const image = !hasSlides
-      ? renderVisualMediaButton(imagePath, visual.alt || visual.title, visual.title, lightboxId)
+      ? renderVisualMediaButton(
+          imagePath,
+          visual.alt || visual.title,
+          visual.title,
+          lightboxId,
+          "",
+          visual.mediaWidth,
+          visual.mediaHeight
+        )
       : "";
     const lightbox = !hasSlides
       ? renderLightbox(lightboxId, visual.title, imagePath, visual.alt || visual.title)
@@ -514,6 +538,9 @@
       || hasValue(visual.detailSubtitle)
       || hasValue(visual.methodNote)
       || hasValue(visual.metricNote);
+    const videoBeforeDescription = visual.videoBeforeDescription
+      && !hasSlides
+      && !hasCaseStudyContent;
     const methodNote = hasValue(visual.methodNote)
       ? `<p class="visual-note"><strong>Method / tools:</strong> ${escapeHtml(visual.methodNote)}</p>`
       : "";
@@ -551,6 +578,7 @@
         `
         : `
           ${image}
+          ${videoBeforeDescription ? videoCta : ""}
           <div class="visual-body">
             <p class="project-description">${escapeHtml(visual.shortDescription || visual.description || "")}</p>
           </div>
@@ -566,7 +594,7 @@
         </summary>
         <div class="visual-expanded">
           ${expandedContent}
-          ${videoCta}
+          ${videoBeforeDescription ? "" : videoCta}
         </div>
         ${lightbox}
       </details>
